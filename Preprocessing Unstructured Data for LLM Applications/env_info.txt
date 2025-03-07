@@ -1,0 +1,3 @@
+#conda create -n dlai-short-courses python=3.9.18
+#conda activate dlai-short-courses
+pip install -r requirements.txt
