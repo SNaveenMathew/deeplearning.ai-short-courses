@@ -1,6 +1,10 @@
 # deeplearning.ai-short-courses
 Space for local runs and experiments with deeplearning.ai short courses
 
+## Disclaimer
+
+Almost all the code is COPIED. I do not claim intellectual rights over the code or any assets. I intend to use the code shared by the respective creators to satisfy my curiosity and/or to build something useful.
+
 ## Downloading the required files
 
 1. Click View -> File Browser
