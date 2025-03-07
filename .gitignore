@@ -1,0 +1,5 @@
+**/config.json
+**/example_files/*
+**/images/*
+**/.ipynb_checkpoints/*
+**/__pycache__/*
