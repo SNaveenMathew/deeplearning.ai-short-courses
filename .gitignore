@@ -3,3 +3,5 @@
 **/images/*
 **/.ipynb_checkpoints/*
 **/__pycache__/*
+**/*.sqlite*
+**/*.bin
