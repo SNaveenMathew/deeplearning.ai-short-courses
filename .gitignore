@@ -5,3 +5,4 @@
 **/__pycache__/*
 **/*.sqlite*
 **/*.bin
+**/*OPENAI_API_KEY*
