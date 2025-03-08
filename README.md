@@ -5,6 +5,14 @@ Space for local runs and experiments with deeplearning.ai short courses
 
 Almost all the code is COPIED. I do not claim intellectual rights over the code or any assets. I intend to use the code shared by the respective creators to satisfy my curiosity and/or to build something useful.
 
+## Honest short course ratings
+
+Note: This is my opinion on the courses. This may not reflect their true ratings.
+
+| Course name | Prerequisites | Effectiveness in projects | Usefulness | Difficulty (5 = tough, 0 = easy) | Comments |
+| -------- | ------- | ------- | ------- | ------- | ------- |
+| Preprocessing Unstructured Data for LLM Applications | Python | ![stars](https://starrating-beta.vercel.app/0.5/) | ![stars](https://starrating-beta.vercel.app/0.5/)  | ![stars](https://starrating-beta.vercel.app/2.5/) | Using the `unstructured` API is very painful, especially since it's almost at EOL |
+
 ## Downloading the required files
 
 1. Click View -> File Browser
