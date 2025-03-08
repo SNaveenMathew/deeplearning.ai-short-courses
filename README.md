@@ -11,7 +11,7 @@ Note: This is my opinion on the courses. This may not reflect their true ratings
 
 | Course name | Prerequisites | Effectiveness in projects | Usefulness | Difficulty (5 = tough, 0 = easy) | Comments |
 | -------- | ------- | ------- | ------- | ------- | ------- |
-| Preprocessing Unstructured Data for LLM Applications | Python | ![stars](https://starrating-beta.vercel.app/0.5/) | ![stars](https://starrating-beta.vercel.app/0.5/)  | ![stars](https://starrating-beta.vercel.app/2.5/) | Using the `unstructured` API is very painful, especially since it's almost at EOL |
+| Preprocessing Unstructured Data for LLM Applications | Python | ![stars](https://starrating-beta.vercel.app/0.5/) | ![stars](https://starrating-beta.vercel.app/0.5/)  | ![stars](https://starrating-beta.vercel.app/2.5/) | Using the `unstructured` API is very painful, especially since it's almost at EOL. Didn't work even after receiving an email from Unstructured Marketing Team |
 
 ## Downloading the required files
 
