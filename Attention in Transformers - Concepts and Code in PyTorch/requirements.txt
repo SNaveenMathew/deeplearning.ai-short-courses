@@ -1,0 +1,2 @@
+# requirements file
+#torch==2.4.1# Breaks torchvision. Better keep torch==2.6.0 as is
