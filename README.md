@@ -15,7 +15,7 @@ Note: This is my opinion on the courses. This may not reflect their true ratings
 
 ## Downloading the required files
 
-1. Click View -> File Browser
+1. Click View -> File Browser or File -> Open
 2. Select multiple files at a time and click 'Download' because it's impossible to install `zip` or any other tool without having admin rights
 
 ## Conda environment
