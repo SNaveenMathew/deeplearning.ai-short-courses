@@ -11,7 +11,8 @@ Note: This is my opinion on the courses. This may not reflect their true ratings
 
 | Course name | Prerequisites | Effectiveness in projects | Usefulness | Difficulty (5 = tough, 0 = easy) | Comments |
 | -------- | ------- | ------- | ------- | ------- | ------- |
-| Preprocessing Unstructured Data for LLM Applications | Python | ![stars](https://starrating-beta.vercel.app/0.5/) | ![stars](https://starrating-beta.vercel.app/0.5/)  | ![stars](https://starrating-beta.vercel.app/2.5/) | Using the `unstructured` API is very painful, especially since it's almost at EOL. Didn't work even after receiving an email from Unstructured Marketing Team |
+| [Preprocessing Unstructured Data for LLM Applications](https://learn.deeplearning.ai/courses/preprocessing-unstructured-data-for-llm-applications) | Python | ![stars](https://starrating-beta.vercel.app/3.5/) | ![stars](https://starrating-beta.vercel.app/2.5/)  | ![stars](https://starrating-beta.vercel.app/2.5/) | Using the `unstructured` API is very painful, especially since it's almost at EOL. Didn't work even after receiving an email from Unstructured Marketing Team |
+| [Attention in Transformers: Concepts and Code in PyTorch](https://learn.deeplearning.ai/courses/attention-in-transformers-concepts-and-code-in-pytorch) | Python, PyTorch, Linear Algebra | ![stars](https://starrating-beta.vercel.app/1.5/) | ![stars](https://starrating-beta.vercel.app/3.5/)  | ![stars](https://starrating-beta.vercel.app/3.0/) | Theoretical course. Very useful for attention-based model training and debugging, but kinda hard to find a use if your mentality is "build at any cost even if I don't undertand it" |
 
 ## Downloading the required files
 
