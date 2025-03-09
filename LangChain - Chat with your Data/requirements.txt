@@ -3,3 +3,4 @@ yt_dlp
 pydub
 lark
 scikit-learn
+langchain[docarray]
