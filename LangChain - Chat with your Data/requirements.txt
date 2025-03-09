@@ -2,3 +2,4 @@ pypdf
 yt_dlp
 pydub
 lark
+scikit-learn
