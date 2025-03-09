@@ -1,3 +1,4 @@
 pypdf
 yt_dlp
 pydub
+lark
