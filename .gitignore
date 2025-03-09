@@ -6,3 +6,5 @@
 **/*.sqlite*
 **/*.bin
 **/*OPENAI_API_KEY*
+**/docs/*
+**/img/*
