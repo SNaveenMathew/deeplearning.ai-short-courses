@@ -1,0 +1,9 @@
+# Using Windows-native supported version of tensorflow and the corresponding version of numpy
+tensorflow<2.11
+matplotlib==3.7
+contourpy==1.2.0
+scipy==1.10
+sentence-transformers==3.4.1
+seaborn==0.12
+pandas==2.0
+numpy==1.20.3
