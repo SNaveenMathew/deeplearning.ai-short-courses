@@ -7,3 +7,4 @@ sentence-transformers==3.4.1
 seaborn==0.12
 pandas==2.0
 numpy==1.20.3
+weaviate==0.1.2
