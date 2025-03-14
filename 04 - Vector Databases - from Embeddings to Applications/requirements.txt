@@ -8,3 +8,4 @@ seaborn==0.12
 pandas==2.0
 numpy==1.20.3
 weaviate==0.1.2
+weaviate-client==4.4.0
