@@ -1,2 +1,2 @@
 conda activate dlai-short-courses
-pip install -r requirements.txt
+#pip install -r windows_requirements.txt

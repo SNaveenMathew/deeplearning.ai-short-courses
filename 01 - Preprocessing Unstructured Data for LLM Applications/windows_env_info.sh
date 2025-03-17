@@ -3,7 +3,7 @@ conda activate dlai-short-courses
 conda install jupyter
 pip install ipykernel
 python -m ipykernel install --user --name dlai-short-courses --display-name "Python (dlai-short-courses)"
-pip install -r requirements.txt
+pip install -r windows_requirements.txt
 conda install conda-forge::sentencepiece
 pip install spacy
 python -m spacy download en_core_web_sm
