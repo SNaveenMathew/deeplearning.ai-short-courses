@@ -102,7 +102,6 @@ def build_sentence_window_index(
             StorageContext.from_defaults(persist_dir=save_dir),
             service_context=sentence_context,
         )
-
     return sentence_index
 
 
@@ -116,7 +115,6 @@ def get_sentence_window_query_engine(
     rerank = SentenceTransformerRerank(
         top_n=rerank_top_n, model="BAAI/bge-reranker-base"
     )
-
     sentence_window_engine = sentence_index.as_query_engine(
         similarity_top_k=similarity_top_k, node_postprocessors=[postproc, rerank]
     )
