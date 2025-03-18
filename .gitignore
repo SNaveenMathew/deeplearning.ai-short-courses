@@ -10,3 +10,5 @@
 **/img/*
 **/*LANGCHAIN_API_KEY*
 **/*HF_API_KEY*
+**/*store.json*
+**/*.toml*
