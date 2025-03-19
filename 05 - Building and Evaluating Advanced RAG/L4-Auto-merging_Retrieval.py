@@ -23,7 +23,7 @@ openai.api_key = utils.get_openai_api_key()
 # In[ ]:
 
 
-from llama_index import SimpleDirectoryReader
+from llama_index.core import SimpleDirectoryReader
 
 documents = SimpleDirectoryReader(
     input_files=["example_files/eBook-How-to-Build-a-Career-in-AI.pdf"]
@@ -44,7 +44,7 @@ print(documents[0])
 # In[ ]:
 
 
-from llama_index import Document
+from llama_index.core import Document
 
 document = Document(text="\n\n".join([doc.text for doc in documents]))
 
@@ -52,7 +52,7 @@ document = Document(text="\n\n".join([doc.text for doc in documents]))
 # In[ ]:
 
 
-from llama_index.node_parser import HierarchicalNodeParser
+from llama_index.core.node_parser import HierarchicalNodeParser
 
 # create the hierarchical node parser w/ default settings
 node_parser = HierarchicalNodeParser.from_defaults(
@@ -69,7 +69,7 @@ nodes = node_parser.get_nodes_from_documents([document])
 # In[ ]:
 
 
-from llama_index.node_parser import get_leaf_nodes
+from llama_index.core.node_parser import get_leaf_nodes
 
 leaf_nodes = get_leaf_nodes(nodes)
 print(leaf_nodes[30].text)
@@ -89,7 +89,7 @@ print(parent_node.text)
 # In[ ]:
 
 
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 
@@ -97,25 +97,31 @@ llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 # In[ ]:
 
 
-from llama_index import ServiceContext
+# from llama_index import ServiceContext
 
-auto_merging_context = ServiceContext.from_defaults(
-    llm=llm,
-    embed_model="local:BAAI/bge-small-en-v1.5",
-    node_parser=node_parser,
-)
+# auto_merging_context = ServiceContext.from_defaults(
+#     llm=llm,
+#     embed_model="local:BAAI/bge-small-en-v1.5",
+#     node_parser=node_parser,
+# )
 
 
 # In[ ]:
 
 
-from llama_index import VectorStoreIndex, StorageContext
+from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.core import Settings
 
+Settings.llm=llm
+Settings.embed_model="local:BAAI/bge-small-en-v1.5"
+Settings.node_parser=node_parser
 storage_context = StorageContext.from_defaults()
 storage_context.docstore.add_documents(nodes)
 
 automerging_index = VectorStoreIndex(
-    leaf_nodes, storage_context=storage_context, service_context=auto_merging_context
+    leaf_nodes, storage_context=storage_context,
+    # service_context=auto_merging_context
+    settings=Settings
 )
 
 automerging_index.storage_context.persist(persist_dir="./merging_index")
@@ -129,8 +135,8 @@ automerging_index.storage_context.persist(persist_dir="./merging_index")
 # if not, it will rebuild it
 
 import os
-from llama_index import VectorStoreIndex, StorageContext, load_index_from_storage
-from llama_index import load_index_from_storage
+from llama_index.core import VectorStoreIndex, StorageContext, load_index_from_storage
+from llama_index.core import load_index_from_storage
 
 if not os.path.exists("./merging_index"):
     storage_context = StorageContext.from_defaults()
@@ -138,13 +144,15 @@ if not os.path.exists("./merging_index"):
     automerging_index = VectorStoreIndex(
             leaf_nodes,
             storage_context=storage_context,
-            service_context=auto_merging_context
+            # service_context=auto_merging_context
+            settings=Settings
         )
     automerging_index.storage_context.persist(persist_dir="./merging_index")
 else:
     automerging_index = load_index_from_storage(
         StorageContext.from_defaults(persist_dir="./merging_index"),
-        service_context=auto_merging_context
+        # service_context=auto_merging_context
+        settings=Settings
     )
 
 
@@ -153,9 +161,9 @@ else:
 # In[ ]:
 
 
-from llama_index.indices.postprocessor import SentenceTransformerRerank
-from llama_index.retrievers import AutoMergingRetriever
-from llama_index.query_engine import RetrieverQueryEngine
+from llama_index.core.indices.postprocessor import SentenceTransformerRerank
+from llama_index.core.retrievers import AutoMergingRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
 
 automerging_retriever = automerging_index.as_retriever(
     similarity_top_k=12
@@ -197,8 +205,8 @@ display_response(auto_merging_response)
 
 import os
 
-from llama_index import (
-    ServiceContext,
+from llama_index.core import (
+    # ServiceContext,
     StorageContext,
     VectorStoreIndex,
     load_index_from_storage,
@@ -218,25 +226,31 @@ def build_automerging_index(
     save_dir="merging_index",
     chunk_sizes=None,
 ):
+    from llama_index.core import Settings
     chunk_sizes = chunk_sizes or [2048, 512, 128]
     node_parser = HierarchicalNodeParser.from_defaults(chunk_sizes=chunk_sizes)
     nodes = node_parser.get_nodes_from_documents(documents)
     leaf_nodes = get_leaf_nodes(nodes)
-    merging_context = ServiceContext.from_defaults(
-        llm=llm,
-        embed_model=embed_model,
-    )
+    Settings.llm = llm
+    Settings.embed_model = embed_model
+    # merging_context = ServiceContext.from_defaults(
+    #     llm=llm,
+    #     embed_model=embed_model,
+    # )
     storage_context = StorageContext.from_defaults()
     storage_context.docstore.add_documents(nodes)
     if not os.path.exists(save_dir):
         automerging_index = VectorStoreIndex(
-            leaf_nodes, storage_context=storage_context, service_context=merging_context
+            leaf_nodes, storage_context=storage_context,
+            # service_context=merging_context
+            settings = Settings
         )
         automerging_index.storage_context.persist(persist_dir=save_dir)
     else:
         automerging_index = load_index_from_storage(
             StorageContext.from_defaults(persist_dir=save_dir),
-            service_context=merging_context,
+            # service_context=merging_context,
+            settings = Settings
         )
     return automerging_index
 
@@ -262,7 +276,7 @@ def get_automerging_query_engine(
 # In[ ]:
 
 
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 index = build_automerging_index(
     [document],

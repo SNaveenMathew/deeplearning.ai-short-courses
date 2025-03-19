@@ -32,7 +32,7 @@ tru.reset_database()
 # In[ ]:
 
 
-from llama_index import SimpleDirectoryReader
+from llama_index.core import SimpleDirectoryReader
 
 documents = SimpleDirectoryReader(
     input_files=["example_files/eBook-How-to-Build-a-Career-in-AI.pdf"]
@@ -42,7 +42,7 @@ documents = SimpleDirectoryReader(
 # In[ ]:
 
 
-from llama_index import Document
+from llama_index.core import Document
 
 document = Document(text="\n\n".\
                     join([doc.text for doc in documents]))
@@ -53,7 +53,7 @@ document = Document(text="\n\n".\
 
 from utils import build_sentence_window_index
 
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 
@@ -70,8 +70,7 @@ sentence_index = build_sentence_window_index(
 
 from utils import get_sentence_window_query_engine
 
-sentence_window_engine = \
-get_sentence_window_query_engine(sentence_index)
+sentence_window_engine = get_sentence_window_query_engine(sentence_index)
 
 
 # In[ ]:
@@ -156,21 +155,18 @@ f_qs_relevance = (
 # In[ ]:
 
 
-from trulens_eval.feedback import Groundedness
+# from trulens_eval.feedback import Groundedness
 
-grounded = Groundedness(groundedness_provider=provider)
+# grounded = Groundedness(groundedness_provider=provider)
 
 
 # In[ ]:
 
 
 f_groundedness = (
-    Feedback(grounded.groundedness_measure_with_cot_reasons,
-             name="Groundedness"
-            )
-    .on(context_selection)
-    .on_output()
-    .aggregate(grounded.grounded_statements_aggregator)
+    Feedback(provider.groundedness_measure_with_cot_reasons, name="Groundedness")
+        .on(TruLlama.select_source_nodes().node.text)
+        .on_output()
 )
 
 
@@ -197,7 +193,7 @@ tru_recorder = TruLlama(
 
 
 eval_questions = []
-with open('eval_questions.txt', 'r') as file:
+with open('example_files/eval_questions.txt', 'r') as file:
     for line in file:
         # Remove newline character and convert to integer
         item = line.strip()

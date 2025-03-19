@@ -23,7 +23,7 @@ openai.api_key = utils.get_openai_api_key()
 # In[ ]:
 
 
-from llama_index import SimpleDirectoryReader
+from llama_index.core import SimpleDirectoryReader
 
 documents = SimpleDirectoryReader(
     input_files=["example_files/eBook-How-to-Build-a-Career-in-AI.pdf"]
@@ -42,7 +42,7 @@ print(documents[0])
 # In[ ]:
 
 
-from llama_index import Document
+from llama_index.core import Document
 
 document = Document(text="\n\n".join([doc.text for doc in documents]))
 
@@ -52,7 +52,7 @@ document = Document(text="\n\n".join([doc.text for doc in documents]))
 # In[ ]:
 
 
-from llama_index.node_parser import SentenceWindowNodeParser
+from llama_index.core.node_parser import SentenceWindowNodeParser
 
 # create the sentence window node parser w/ default settings
 node_parser = SentenceWindowNodeParser.from_defaults(
@@ -107,7 +107,7 @@ print(nodes[0].metadata["window"])
 # In[ ]:
 
 
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 
@@ -115,23 +115,28 @@ llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 # In[ ]:
 
 
-from llama_index import ServiceContext
+# from llama_index.core import ServiceContext
 
-sentence_context = ServiceContext.from_defaults(
-    llm=llm,
-    embed_model="local:BAAI/bge-small-en-v1.5",
-    # embed_model="local:BAAI/bge-large-en-v1.5"
-    node_parser=node_parser,
-)
+# sentence_context = ServiceContext.from_defaults(
+#     llm=llm,
+#     embed_model="local:BAAI/bge-small-en-v1.5",
+#     # embed_model="local:BAAI/bge-large-en-v1.5"
+#     node_parser=node_parser,
+# )
 
 
 # In[ ]:
 
+from llama_index.core import Settings
 
-from llama_index import VectorStoreIndex
+Settings.llm=llm
+Settings.embed_model="local:BAAI/bge-small-en-v1.5"
+Settings.node_parser=node_parser
+
+from llama_index.core import VectorStoreIndex
 
 sentence_index = VectorStoreIndex.from_documents(
-    [document], service_context=sentence_context
+    [document], settings=Settings
 )
 
 
@@ -149,18 +154,21 @@ sentence_index.storage_context.persist(persist_dir="./sentence_index")
 # if not, it will rebuild it
 
 import os
-from llama_index import VectorStoreIndex, StorageContext, load_index_from_storage
-from llama_index import load_index_from_storage
+from llama_index.core import VectorStoreIndex, StorageContext, load_index_from_storage
+from llama_index.core import load_index_from_storage
 
 if not os.path.exists("./sentence_index"):
     sentence_index = VectorStoreIndex.from_documents(
-        [document], service_context=sentence_context
+        [document],
+        # service_context=sentence_context
+        settings=Settings
     )
     sentence_index.storage_context.persist(persist_dir="./sentence_index")
 else:
     sentence_index = load_index_from_storage(
         StorageContext.from_defaults(persist_dir="./sentence_index"),
-        service_context=sentence_context
+        # service_context=sentence_context
+        settings=Settings
     )
 
 
@@ -169,7 +177,7 @@ else:
 # In[ ]:
 
 
-from llama_index.indices.postprocessor import MetadataReplacementPostProcessor
+from llama_index.core.indices.postprocessor import MetadataReplacementPostProcessor
 
 postproc = MetadataReplacementPostProcessor(
     target_metadata_key="window"
@@ -179,7 +187,7 @@ postproc = MetadataReplacementPostProcessor(
 # In[ ]:
 
 
-from llama_index.schema import NodeWithScore
+from llama_index.core.schema import NodeWithScore
 from copy import deepcopy
 
 scored_nodes = [NodeWithScore(node=x, score=1.0) for x in nodes]
@@ -209,7 +217,7 @@ print(replaced_nodes[1].text)
 # In[ ]:
 
 
-from llama_index.indices.postprocessor import SentenceTransformerRerank
+from llama_index.core.indices.postprocessor import SentenceTransformerRerank
 
 # BAAI/bge-reranker-base
 # link: https://huggingface.co/BAAI/bge-reranker-base
@@ -221,8 +229,8 @@ rerank = SentenceTransformerRerank(
 # In[ ]:
 
 
-from llama_index import QueryBundle
-from llama_index.schema import TextNode, NodeWithScore
+from llama_index.core import QueryBundle
+from llama_index.core.schema import TextNode, NodeWithScore
 
 query = QueryBundle("I want a dog.")
 
@@ -267,7 +275,7 @@ window_response = sentence_window_engine.query(
 # In[ ]:
 
 
-from llama_index.response.notebook_utils import display_response
+from llama_index.core.response.notebook_utils import display_response
 
 display_response(window_response)
 
@@ -278,11 +286,11 @@ display_response(window_response)
 
 
 import os
-from llama_index import ServiceContext, VectorStoreIndex, StorageContext
-from llama_index.node_parser import SentenceWindowNodeParser
-from llama_index.indices.postprocessor import MetadataReplacementPostProcessor
-from llama_index.indices.postprocessor import SentenceTransformerRerank
-from llama_index import load_index_from_storage
+from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.core.node_parser import SentenceWindowNodeParser
+from llama_index.core.indices.postprocessor import MetadataReplacementPostProcessor
+from llama_index.core.indices.postprocessor import SentenceTransformerRerank
+from llama_index.core import load_index_from_storage
 
 
 def build_sentence_window_index(
@@ -292,26 +300,33 @@ def build_sentence_window_index(
     sentence_window_size=3,
     save_dir="sentence_index",
 ):
+    from llama_index.core import Settings
     # create the sentence window node parser w/ default settings
     node_parser = SentenceWindowNodeParser.from_defaults(
         window_size=sentence_window_size,
         window_metadata_key="window",
         original_text_metadata_key="original_text",
     )
-    sentence_context = ServiceContext.from_defaults(
-        llm=llm,
-        embed_model=embed_model,
-        node_parser=node_parser,
-    )
+    Settings.llm = llm
+    Settings.embed_model = embed_model
+    Settings.node_parser = node_parser
+    # sentence_context = ServiceContext.from_defaults(
+    #     llm=llm,
+    #     embed_model=embed_model,
+    #     node_parser=node_parser,
+    # )
     if not os.path.exists(save_dir):
         sentence_index = VectorStoreIndex.from_documents(
-            documents, service_context=sentence_context
+            documents,
+            # service_context=sentence_context
+            settings=Settings
         )
         sentence_index.storage_context.persist(persist_dir=save_dir)
     else:
         sentence_index = load_index_from_storage(
             StorageContext.from_defaults(persist_dir=save_dir),
-            service_context=sentence_context,
+            # service_context=sentence_context,
+            settings=Settings
         )
     return sentence_index
 
@@ -333,7 +348,7 @@ def get_sentence_window_query_engine(
 # In[ ]:
 
 
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 index = build_sentence_window_index(
     [document],
