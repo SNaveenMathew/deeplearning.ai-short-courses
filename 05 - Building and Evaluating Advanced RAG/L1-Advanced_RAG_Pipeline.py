@@ -4,7 +4,7 @@ import openai
 openai.api_key = utils.get_openai_api_key()
 
 
-from llama_index import SimpleDirectoryReader
+from llama_index.core import SimpleDirectoryReader
 documents = SimpleDirectoryReader(
     input_files=["./example_files/eBook-How-to-Build-a-Career-in-AI.pdf"]
 ).load_data()
@@ -17,21 +17,20 @@ print(documents[0])
 
 
 # Basic RAG pipeline
-from llama_index import Document
+from llama_index.core import Document
 
 document = Document(text="\n\n".join([doc.text for doc in documents]))
 
 
-from llama_index import VectorStoreIndex
-from llama_index import ServiceContext
-from llama_index.llms import OpenAI
+from llama_index.core import VectorStoreIndex
+from llama_index.llms.openai import OpenAI
+from llama_index.core import Settings
 
 llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
-service_context = ServiceContext.from_defaults(
-    llm=llm, embed_model="local:BAAI/bge-small-en-v1.5"
-)
+Settings.llm=llm
+Settings.embed_model = "local:BAAI/bge-small-en-v1.5"
 index = VectorStoreIndex.from_documents([document],
-                                        service_context=service_context)
+                                        settings=Settings)
 
 
 query_engine = index.as_query_engine()
@@ -45,7 +44,7 @@ print(str(response))
 
 # Evaluation setup using TruLens
 eval_questions = []
-with open('eval_questions.txt', 'r') as file:
+with open('example_files/eval_questions.txt', 'r') as file:
     for line in file:
         # Remove newline character and convert to integer
         item = line.strip()
@@ -96,7 +95,7 @@ tru.run_dashboard()
 
 # Advanced RAG pipeline
 ## 1. Sentence Window retrieval
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 

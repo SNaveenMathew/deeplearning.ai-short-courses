@@ -11,7 +11,7 @@ from trulens_eval import (
     OpenAI
 )
 
-from trulens_eval.feedback import Groundedness
+# from trulens_eval.feedback import Groundedness
 import nest_asyncio
 
 nest_asyncio.apply()
@@ -44,13 +44,12 @@ qs_relevance = (
 )
 
 #grounded = Groundedness(groundedness_provider=openai, summarize_provider=openai)
-grounded = Groundedness(groundedness_provider=openai)
+# grounded = Groundedness(groundedness_provider=openai)
 
 groundedness = (
-    Feedback(grounded.groundedness_measure_with_cot_reasons, name="Groundedness")
+    Feedback(openai.groundedness_measure_with_cot_reasons, name="Groundedness")
         .on(TruLlama.select_source_nodes().node.text)
         .on_output()
-        .aggregate(grounded.grounded_statements_aggregator)
 )
 
 feedbacks = [qa_relevance, qs_relevance, groundedness]
@@ -71,36 +70,35 @@ def get_prebuilt_trulens_recorder(query_engine, app_id):
         )
     return tru_recorder
 
-from llama_index import ServiceContext, VectorStoreIndex, StorageContext
-from llama_index.node_parser import SentenceWindowNodeParser
-from llama_index.indices.postprocessor import MetadataReplacementPostProcessor
-from llama_index.indices.postprocessor import SentenceTransformerRerank
-from llama_index import load_index_from_storage
+from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.core.node_parser import SentenceWindowNodeParser
+from llama_index.core.indices.postprocessor import MetadataReplacementPostProcessor
+from llama_index.core.indices.postprocessor import SentenceTransformerRerank
+from llama_index.core import load_index_from_storage
 
 
 def build_sentence_window_index(
     document, llm, embed_model="local:BAAI/bge-small-en-v1.5", save_dir="sentence_index"
 ):
+    from llama_index.core import Settings
     # create the sentence window node parser w/ default settings
     node_parser = SentenceWindowNodeParser.from_defaults(
         window_size=3,
         window_metadata_key="window",
         original_text_metadata_key="original_text",
     )
-    sentence_context = ServiceContext.from_defaults(
-        llm=llm,
-        embed_model=embed_model,
-        node_parser=node_parser,
-    )
+    Settings.llm = llm
+    Settings.embed_model = embed_model
+    Settings.node_parser = node_parser
     if not os.path.exists(save_dir):
         sentence_index = VectorStoreIndex.from_documents(
-            [document], service_context=sentence_context
+            [document], settings=Settings
         )
         sentence_index.storage_context.persist(persist_dir=save_dir)
     else:
         sentence_index = load_index_from_storage(
             StorageContext.from_defaults(persist_dir=save_dir),
-            service_context=sentence_context,
+            settings=Settings,
         )
     return sentence_index
 
@@ -121,13 +119,13 @@ def get_sentence_window_query_engine(
     return sentence_window_engine
 
 
-from llama_index.node_parser import HierarchicalNodeParser
+from llama_index.core.node_parser import HierarchicalNodeParser
 
-from llama_index.node_parser import get_leaf_nodes
-from llama_index import StorageContext
-from llama_index.retrievers import AutoMergingRetriever
-from llama_index.indices.postprocessor import SentenceTransformerRerank
-from llama_index.query_engine import RetrieverQueryEngine
+from llama_index.core.node_parser import get_leaf_nodes
+from llama_index.core import StorageContext
+from llama_index.core.retrievers import AutoMergingRetriever
+from llama_index.core.indices.postprocessor import SentenceTransformerRerank
+from llama_index.core.query_engine import RetrieverQueryEngine
 
 
 def build_automerging_index(
@@ -137,26 +135,24 @@ def build_automerging_index(
     save_dir="merging_index",
     chunk_sizes=None,
 ):
+    from llama_index.core import Settings
     chunk_sizes = chunk_sizes or [2048, 512, 128]
     node_parser = HierarchicalNodeParser.from_defaults(chunk_sizes=chunk_sizes)
     nodes = node_parser.get_nodes_from_documents(documents)
     leaf_nodes = get_leaf_nodes(nodes)
-    merging_context = ServiceContext.from_defaults(
-        llm=llm,
-        embed_model=embed_model,
-    )
+    Settings.llm = llm
+    Settings.embed_model = embed_model
     storage_context = StorageContext.from_defaults()
     storage_context.docstore.add_documents(nodes)
-
     if not os.path.exists(save_dir):
         automerging_index = VectorStoreIndex(
-            leaf_nodes, storage_context=storage_context, service_context=merging_context
+            leaf_nodes, storage_context=storage_context, settings=Settings
         )
         automerging_index.storage_context.persist(persist_dir=save_dir)
     else:
         automerging_index = load_index_from_storage(
             StorageContext.from_defaults(persist_dir=save_dir),
-            service_context=merging_context,
+            settings=Settings,
         )
     return automerging_index
 
