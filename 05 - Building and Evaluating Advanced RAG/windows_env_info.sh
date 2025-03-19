@@ -1,6 +1,8 @@
 conda remove -n dlai-short-courses2 --all
-conda create -n dlai-short-courses2 python=3.9.18
+conda env create -f windows_environment.yaml
 conda activate dlai-short-courses2
 pip install ipykernel
 python -m ipykernel install --user --name dlai-short-courses2 --display-name "Python (dlai-short-courses2)"
-pip install -r windows_requirements.txt
+# pip install "trulens-apps-llamaindex>=1.0.0"
+# pip install "trulens-providers-openai>=1.0.0"
+# pip install llama_index[langchain]

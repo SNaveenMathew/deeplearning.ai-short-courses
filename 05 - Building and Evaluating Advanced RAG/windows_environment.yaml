@@ -1,0 +1,11 @@
+# environment.yaml
+
+name: dlai-short-courses2
+channels:
+  - conda-forge
+dependencies:
+  - python==3.10.14
+  - anaconda
+  - pip
+  - pip:
+    - -r windows_requirements.txt
