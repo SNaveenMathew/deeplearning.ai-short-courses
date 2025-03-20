@@ -49,7 +49,7 @@ print(documents[0])
 
 # Basic RAG pipeline
 document = Document(text="\n\n".join([doc.text for doc in documents]))
-llm = Ollama(model="llama3.2:1b", request_timeout=60.0)# LLMs that can run locally: deepseek-r1
+llm = Ollama(model="llama3.2:1b", request_timeout=60.0)# Other LLMs that can run locally on 16GB VRAM: deepseek-r1, gemma3:1b, gemma3, gemma3:12b, llama3.2, llama3.2-vision, llama3.1, phi4, phi4-mini, mistral, moondream, neural-chat, starling-lm, codellama, llama2-uncensored, llava, granite3.2
 
 from llama_index.core import Settings
 Settings.llm = llm
@@ -154,7 +154,7 @@ tru.run_dashboard()
 nest_asyncio.apply()
 # provider = fOpenAI()
 provider = LiteLLM(
-    model_engine=f"ollama/llama3.2:1b", 
+    model_engine=f"ollama/llama3.2:1b",# Other LLMs that can run locally on 16GB VRAM: deepseek-r1, gemma3:1b, gemma3, gemma3:12b, llama3.2, llama3.2-vision, llama3.1, phi4, phi4-mini, mistral, moondream, neural-chat, starling-lm, codellama, llama2-uncensored, llava, granite3.2
     endpoint="http://localhost:11435"
 )
 
