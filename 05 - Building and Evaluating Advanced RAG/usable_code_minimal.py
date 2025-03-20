@@ -27,6 +27,7 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import AutoMergingRetriever
 from llama_index.core.schema import NodeWithScore
 from llama_index.core.schema import TextNode
+from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 
 from trulens_eval import Feedback
@@ -48,7 +49,8 @@ print(documents[0])
 
 # Basic RAG pipeline
 document = Document(text="\n\n".join([doc.text for doc in documents]))
-llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+# llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+llm = Ollama(model="llama3.2:1b", request_timeout=60.0)
 
 from llama_index.core import Settings
 Settings.llm = llm
