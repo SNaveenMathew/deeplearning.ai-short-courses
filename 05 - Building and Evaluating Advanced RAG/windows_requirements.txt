@@ -9,6 +9,7 @@ huggingface-hub
 httpx
 langchain
 langsmith
+litellm
 llama-index
 llama_index[langchain]
 llama-index-embeddings-huggingface
