@@ -2,7 +2,7 @@ import utils
 import numpy as np
 import pandas as pd
 import os
-import openai
+# import openai
 import nest_asyncio
 from copy import deepcopy
 
@@ -22,20 +22,21 @@ from llama_index.core.indices.postprocessor import MetadataReplacementPostProces
 from llama_index.core.indices.postprocessor import SentenceTransformerRerank
 from llama_index.core.node_parser import HierarchicalNodeParser
 from llama_index.core.node_parser import SentenceWindowNodeParser
-from llama_index.core.response.notebook_utils import display_response
+# from llama_index.core.response.notebook_utils import display_response# Use this in Jupyter
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import AutoMergingRetriever
 from llama_index.core.schema import NodeWithScore
 from llama_index.core.schema import TextNode
 from llama_index.llms.ollama import Ollama
-from llama_index.llms.openai import OpenAI
+# from llama_index.llms.openai import OpenAI
 
 from trulens_eval import Feedback
-from trulens_eval import OpenAI as fOpenAI
+# from trulens_eval import OpenAI as fOpenAI
 from trulens_eval import Tru
 from trulens_eval import TruLlama
+from trulens_eval.feedback import LiteLLM
 
-openai.api_key = utils.get_openai_api_key()
+# openai.api_key = utils.get_openai_api_key()
 
 documents = SimpleDirectoryReader(
     input_dir="../../tech_non_tech_blog/_posts/"
@@ -49,8 +50,7 @@ print(documents[0])
 
 # Basic RAG pipeline
 document = Document(text="\n\n".join([doc.text for doc in documents]))
-# llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
-llm = Ollama(model="llama3.2:1b", request_timeout=60.0)
+llm = Ollama(model="llama3.2:1b", request_timeout=60.0)# LLMs that can run locally: deepseek-r1
 
 from llama_index.core import Settings
 Settings.llm = llm
@@ -91,7 +91,7 @@ tru.run_dashboard()
 
 # Advanced RAG pipeline
 ## 1. Sentence Window retrieval
-llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+# llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 sentence_index = build_sentence_window_index(
     document,
     llm,
@@ -100,7 +100,7 @@ sentence_index = build_sentence_window_index(
 )
 sentence_window_engine = get_sentence_window_query_engine(sentence_index)
 window_response = sentence_window_engine.query(
-    "how do I get started on a personal project in AI?"
+    "How to speed up diff between consecutive rows in python?"
 )
 print(str(window_response))
 
@@ -153,7 +153,11 @@ tru.run_dashboard()
 
 ## Feedback functions
 nest_asyncio.apply()
-provider = fOpenAI()
+# provider = fOpenAI()
+provider = LiteLLM(
+    model_engine=f"ollama/llama3.2:1b", 
+    endpoint="http://localhost:11435"
+)
 
 ### 1. Answer Relevance
 f_qa_relevance = Feedback(
@@ -223,7 +227,6 @@ print(nodes[0].metadata["window"])
 
 
 ### Building the index
-llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
 
 from llama_index.core import Settings
 Settings.llm=llm
@@ -333,8 +336,9 @@ auto_merging_engine = RetrieverQueryEngine.from_args(
     automerging_retriever, node_postprocessors=[rerank]
 )
 auto_merging_response = auto_merging_engine.query(
-    "What is the importance of networking in AI?"
+    "Why should one use unsupervised learning for exoplanet detection?"
 )
+print(str(auto_merging_response))
 
 
 ### Runing the query engine
@@ -342,15 +346,15 @@ sentence_window_engine = sentence_index.as_query_engine(
     similarity_top_k=6, node_postprocessors=[postproc, rerank]
 )
 window_response = sentence_window_engine.query(
-    "What are the keys to building a career in AI?"
+    "Why should one use unsupervised learning for exoplanet detection?"
 )
-display_response(window_response)
+print(str(window_response))
 
 
 ### Two layers
 auto_merging_index_0 = build_automerging_index(
     documents,
-    llm=OpenAI(model="gpt-3.5-turbo", temperature=0.1),
+    llm=llm,
     embed_model="local:BAAI/bge-small-en-v1.5",
     save_dir="merging_index_0",
     chunk_sizes=[2048,512],
@@ -369,8 +373,10 @@ def run_evals(eval_questions, tru_recorder, query_engine):
     for question in eval_questions:
         with tru_recorder as recording:
             response = query_engine.query(question)
+    
+    return tru_recorder
 
-run_evals(eval_questions, tru_recorder, auto_merging_engine_0)
+tru_recorder = run_evals(eval_questions, tru_recorder, auto_merging_engine_0)
 Tru().get_leaderboard(app_ids=[])
 Tru().run_dashboard()
 
@@ -378,7 +384,7 @@ Tru().run_dashboard()
 ### Three layers
 auto_merging_index_1 = build_automerging_index(
     documents,
-    llm=OpenAI(model="gpt-3.5-turbo", temperature=0.1),
+    llm=llm,
     embed_model="local:BAAI/bge-small-en-v1.5",
     save_dir="merging_index_1",
     chunk_sizes=[2048,512,128],
@@ -392,6 +398,6 @@ tru_recorder = get_prebuilt_trulens_recorder(
     auto_merging_engine_1,
     app_id ='app_1'
 )
-run_evals(eval_questions, tru_recorder, auto_merging_engine_1)
+tru_recorder = run_evals(eval_questions, tru_recorder, auto_merging_engine_1)
 Tru().get_leaderboard(app_ids=[])
 Tru().run_dashboard()
