@@ -12,3 +12,4 @@
 **/*HF_API_KEY*
 **/*store.json*
 **/*.toml*
+**/weights/*
