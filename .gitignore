@@ -13,3 +13,4 @@
 **/*store.json*
 **/*.toml*
 **/weights/*
+**.npy
