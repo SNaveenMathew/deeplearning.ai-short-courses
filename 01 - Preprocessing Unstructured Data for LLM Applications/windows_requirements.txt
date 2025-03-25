@@ -19,6 +19,9 @@ python-pptx==0.6.23
 pdf2image==1.17.0
 pdfminer==20191125
 opencv-python==4.9.0.80
-sentence_transformers
+sentence_transformers==3.4.1
 pikepdf==8.13.0
 pypdf==4.0.1
+datasets==3.4.1
+soundfile==0.13.1
+librosa==0.11.0
