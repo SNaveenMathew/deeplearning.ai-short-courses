@@ -16,3 +16,4 @@
 **.npy
 **/models/*
 **/*.wav
+**/images_app/*
