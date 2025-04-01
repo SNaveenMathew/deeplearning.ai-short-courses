@@ -9,6 +9,7 @@
 **/docs/*
 **/img/*
 **/*LANGCHAIN_API_KEY*
+**/*LAMINI_API_KEY*
 **/*HF_API_KEY*
 **/*store.json*
 **/*.toml*
