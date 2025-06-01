@@ -1,3 +1,27 @@
+# Recommendation: Create a new python/conda environment and run the following command:
+# pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+
+########################################################################################################
+# This section of code takes an image as input and 'predicts' different segments included in the image #
+########################################################################################################
+
+# This code was copied from Ultralytics website
+from ultralytics import YOLO
+model = YOLO("yolo11n-seg.pt")  # load a pretrained model (recommended for training)
+results = model("https://d2tk9av7ph0ga6.cloudfront.net/image/catalog/1522919683-35709-700xauto.png")
+# Access the results
+for result in results:
+    xy = result.masks.xy  # mask in polygon format
+    xyn = result.masks.xyn  # normalized
+    masks = result.masks.data  # mask in matrix format (num_objects x H x W)
+    result.save_crop("try")
+
+# There's only one prediction - scissors
+
+#####################################################################################################
+# This section of code explains the 'prediction' of the model using Layerwise Relevance Propagation #
+#####################################################################################################
+
 # Prerequisite - install easy_explain package using pip
 # This code was copied from easy_explain examples
 # Link:https://github.com/stavrostheocharis/easy_explain/blob/main/examples/lrp/easy_explain_lrp_for_Yolov8_use_as_package_pipeline.ipynb
@@ -25,11 +49,33 @@ image.show()
 image = transform(image)
 
 lrp = YOLOv8LRP(model, power=2, eps=1, device='gpu')
+
+# Explaining the predicted 'class'
+
+explanation_lrp = lrp.explain(image, cls='scissors', contrastive=False).cpu()
+
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=True, cmap='seismic', title='Explanation for Class "scissors"')
+
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='seismic', title='Explanation for Class "scissors"')
+
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='Reds', title='Explanation for Class "scissors"')
+
+# I think it's visually closest to a toothbrush
+
 explanation_lrp = lrp.explain(image, cls='toothbrush', contrastive=False).cpu()
 
-lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=True, cmap='seismic', title='Explanation for Class "traffic light"')
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=True, cmap='seismic', title='Explanation for Class "toothbrush"')
 
-lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='seismic', title='Explanation for Class "traffic light"')
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='seismic', title='Explanation for Class "toothbrush"')
 
-lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='Reds', title='Explanation for Class "traffic light"')
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='Reds', title='Explanation for Class "toothbrush"')
 
+# Here's something interesting: try changing cls from 'toothbrush' to 'traffic light' or 'person' or even 'laptop', the results don't change significantly - at least not visually
+
+explanation_lrp = lrp.explain(image, cls='laptop', contrastive=False).cpu()
+
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=True, cmap='seismic', title='Explanation for Class "laptop"')
+
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='seismic', title='Explanation for Class "laptop"')
+
+lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='Reds', title='Explanation for Class "laptop"')
