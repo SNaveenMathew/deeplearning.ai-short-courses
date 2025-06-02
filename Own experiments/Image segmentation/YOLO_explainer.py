@@ -8,7 +8,7 @@
 # This code was copied from Ultralytics website
 from ultralytics import YOLO
 model = YOLO("yolo11n-seg.pt")  # load a pretrained model (recommended for training)
-results = model("https://d2tk9av7ph0ga6.cloudfront.net/image/catalog/1522919683-35709-700xauto.png")
+results = model("https://static.wikia.nocookie.net/eighteleven/images/6/65/ZSprite_Vittorinoc.png")
 # Access the results
 for result in results:
     xy = result.masks.xy  # mask in polygon format
@@ -34,16 +34,16 @@ import requests
 import urllib.request
 
 model = YOLO('ultralyticsplus/yolov8s')
-response = requests.get("https://images.unsplash.com/photo-1584649525122-8d6895492a5d?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
-# response = requests.get("https://d2tk9av7ph0ga6.cloudfront.net/image/catalog/1522919683-35709-700xauto.png")
+# response = requests.get("https://images.unsplash.com/photo-1584649525122-8d6895492a5d?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
+response = requests.get("https://static.wikia.nocookie.net/eighteleven/images/6/65/ZSprite_Vittorinoc.png")
 desired_size = (512, 640)
 transform = torchvision.transforms.Compose([
     torchvision.transforms.Resize(desired_size),
     torchvision.transforms.ToTensor(),
 ])
 # image = Image.open(BytesIO(response.content))
-urllib.request.urlretrieve('https://d2tk9av7ph0ga6.cloudfront.net/image/catalog/1522919683-35709-700xauto.png', "crochet_hook.png")
-image = Image.open("crochet_hook.png").convert('RGB')
+urllib.request.urlretrieve('https://static.wikia.nocookie.net/eighteleven/images/6/65/ZSprite_Vittorinoc.png', "character_sprite.png")
+image = Image.open("character_sprite.png").convert('RGB')
 image.show()
 
 image = transform(image)
@@ -79,3 +79,5 @@ lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=Tru
 lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='seismic', title='Explanation for Class "laptop"')
 
 lrp.plot_explanation(frame=image, explanation = explanation_lrp, contrastive=False, cmap='Reds', title='Explanation for Class "laptop"')
+
+# Entering a wrong class name throws an error. But independent of the class used in the explanation the outline looks like a person
