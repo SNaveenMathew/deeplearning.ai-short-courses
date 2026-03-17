@@ -19,3 +19,5 @@
 **/*.wav
 **/images_app/*
 **/data/*
+**/*checkpoint*/*
+**config.json**
